@@ -2,21 +2,35 @@
     'use strict'
 
     let deck = [];
-    const types = ['C', 'D', 'S', 'H'];
-    const special_cards = ['J', 'Q', 'K', 'A']
-    let playerPoints = 0,
-        pcPoints = 0
+    const types = ['C', 'D', 'S', 'H'],
+        special_cards = ['J', 'Q', 'K', 'A'];
 
-    const btnNew = document.querySelector('#btnNew');
-    const btnGet = document.querySelector('#btnGet');
-    const btnStop = document.querySelector('#btnStop');
-    const small = document.querySelectorAll("small");
+    let playersPoints = []
 
-    const playerCards = document.querySelector('#player-cards');
-    const computerCards = document.querySelector('#computer-cards');
+    const btnNew = document.querySelector('#btnNew'),
+        btnGet = document.querySelector('#btnGet'),
+        btnStop = document.querySelector('#btnStop'),
+        small = document.querySelectorAll("small");
+
+    const divCardsPlayers = document.querySelectorAll('.divCards');
+
+    const startGame = (numPlayers = 2) => {
+        deck = createDeck();
+        playersPoints = []
+        for (let i = 0; i < numPlayers; i++) {
+            playersPoints.push(0)
+        }
+
+        small.forEach(el => el.innerText = 0)
+        divCardsPlayers.forEach(el => el.innerHTML = '');
+
+        btnGet.disabled = false;
+        btnStop.disabled = false;
+    }
 
     // This funtion create a new deck
     const createDeck = () => {
+        deck = []
         for (let i = 2; i <= 10; i++) {
             for (let type of types) {
                 deck.push(i + type);
@@ -28,20 +42,23 @@
                 deck.push(special + type);
             }
         }
-
-        deck = _.shuffle(deck);
-        return deck;
+        return _.shuffle(deck);
     }
 
-    createDeck();
+
 
     const requestCard = () => {
 
         if (deck.length === 0) {
             throw 'There are not cards in the deck'
         }
-        const card = deck.pop();
-        return card;
+        // unoptimazed code
+
+        // - const card = deck.pop();
+        // - return card;
+
+        // Optimized
+        return deck.pop()
     }
 
     // requestCard();
@@ -63,27 +80,23 @@
         // console.log({ value })
     }
 
-    const cumputerTurn = (minPoints) => {
-        do {
+    const accumPoints = (card, turn) => {
+        playersPoints[turn] = playersPoints[turn] + cardValue(card);
+        small[turn].innerText = playersPoints[turn];
+        return playersPoints[turn];
+    }
 
-            const card = requestCard();
-            pcPoints = pcPoints + cardValue(card);
-            small[1].innerText = pcPoints;
+    const createCard = (card, turn) => {
+        const imgCard = document.createElement('img');
+        imgCard.src = `assets/cartas/${card}.png`;
+        imgCard.classList.add('cards');
+        divCardsPlayers[turn].append(imgCard)
+    }
 
-            const imgCard = document.createElement('img');
-            imgCard.src = `assets/cartas/${card}.png`;
-            computerCards.append(imgCard);
-            imgCard.classList.add('cards');
-
-            if (minPoints > 21) {
-                break;
-            }
-
-        } while ((pcPoints < minPoints) && (minPoints <= 21));
-
+    const determinateWinner = () => {
+        const [minPoints, pcPoints] = playersPoints
         setTimeout(() => {
-            if (pcPoints == playerPoints) {
-                console.warn('tie')
+            if (pcPoints === playersPoints) {
                 alert('tie')
             } else if (minPoints > 21) {
                 alert('pc won!')
@@ -95,15 +108,27 @@
         }, 100)
     }
 
+    const cumputerTurn = (minPoints) => {
+        let pcPoints = 0;
+        do {
+
+            const card = requestCard();
+            pcPoints = accumPoints(card, playersPoints.length - 1);
+            createCard(card, playersPoints.length - 1);
+
+            if (minPoints > 21) {
+                break;
+            }
+
+        } while ((pcPoints < minPoints) && (minPoints <= 21));
+        determinateWinner();
+
+    }
+
     btnGet.addEventListener('click', function () {
         const card = requestCard();
-        playerPoints = playerPoints + cardValue(card);
-        small[0].innerText = playerPoints;
-
-        const imgCard = document.createElement('img');
-        imgCard.src = `assets/cartas/${card}.png`
-        playerCards.append(imgCard);
-        imgCard.classList.add('cards');
+        const playerPoints = accumPoints(card, 0);
+        createCard(card, 0)
 
         if (playerPoints > 21) {
             console.error('Sorry, Game Over');
@@ -122,28 +147,11 @@
 
     btnStop.addEventListener('click', function () {
         btnGet.disabled = true;
-        cumputerTurn(playerPoints);
         btnStop.disabled = true;
-    })
-
-    btnNew.addEventListener('click', () => {
-
-        deck = []
-
-        deck = createDeck();
-
-        btnGet.disabled = false;
-        btnStop.disabled = false;
-
-        playerPoints = 0;
-        pcPoints = 0;
-
-        small[0].innerHTML = 0;
-        small[1].innerHTML = 0;
-
-        playerCards.innerHTML = '';
-        computerCards.innerHTML = '';
+        cumputerTurn(playersPoints[0]);
     });
 
-
+    btnNew.addEventListener('click', () => {
+        startGame();
+    });
 })();
