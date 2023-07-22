@@ -1,6 +1,4 @@
-
 (() => {
-    'use strict'
 
     let deck = [];
     const types = ['C', 'D', 'S', 'H'];
@@ -30,9 +28,7 @@
             }
         }
 
-        // console.log(deck)
         deck = _.shuffle(deck)
-        // console.log(deck)
         return deck
     }
 
@@ -44,8 +40,6 @@
             throw 'There are not cards in the deck'
         }
         const card = deck.pop();
-        console.log(deck);
-        console.log(card);
         return card;
     }
 
@@ -148,12 +142,7 @@
 
         playerCards.innerHTML = ''
         computerCards.innerHTML = ''
-
-
     })
 
 
-
 })();
-
-
