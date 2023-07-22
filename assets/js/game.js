@@ -64,6 +64,38 @@ const cardValue = (card) => {
     // console.log({ value })
 }
 
+const cumputerTurn = (minPoints) => {
+    do {
+
+        const card = requestCard();
+        pcPoints = pcPoints + cardValue(card)
+        small[1].innerText = pcPoints
+
+        const imgCard = document.createElement('img');
+        imgCard.src = `assets/cartas/${card}.png`
+        computerCards.append(imgCard)
+        imgCard.classList.add('cards')
+
+        if (minPoints > 21) {
+            break;
+        }
+
+    } while ((pcPoints < minPoints) && (minPoints <= 21));
+
+    setTimeout(() => {
+        if (pcPoints == playerPoints) {
+            console.warn('tie')
+            alert('tie')
+        } else if (minPoints > 21) {
+            alert('pc won!')
+        } else if (pcPoints > 21) {
+            alert('player 1 won')
+        } else {
+            alert('pc won')
+        }
+    }, 100)
+}
+
 btnGet.addEventListener('click', function () {
     const card = requestCard();
     playerPoints = playerPoints + cardValue(card)
@@ -73,8 +105,46 @@ btnGet.addEventListener('click', function () {
     imgCard.src = `assets/cartas/${card}.png`
     playerCards.append(imgCard)
     imgCard.classList.add('cards')
-    // <img src="assets/cartas/10C.png" class="carta">
 
-    // console.log({ playerPoints })
-    // console.log({ card })
+    if (playerPoints > 21) {
+        console.error('Sorry, Game Over');
+        btnGet.disabled = true
+        btnStop.disabled = true
+
+        cumputerTurn(playerPoints)
+    } else if (playerPoints === 21) {
+        console.warn('Booyah');
+        btnGet.disabled = true
+        btnStop.disabled = true
+
+        cumputerTurn(playerPoints)
+    }
 })
+
+btnStop.addEventListener('click', function () {
+    btnGet.disabled = true
+    cumputerTurn(playerPoints)
+    btnStop.disabled = true
+})
+
+btnNew.addEventListener('click', () => {
+
+    deck = []
+
+    deck = createDeck();
+
+    btnGet.disabled = false
+    btnStop.disabled = false
+
+    playerPoints = 0
+    pcPoints = 0
+
+    small[0].innerHTML = 0
+    small[1].innerHTML = 0
+
+    playerCards.innerHTML = ''
+    computerCards.innerHTML = ''
+
+
+})
+
