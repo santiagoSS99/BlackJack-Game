@@ -16,9 +16,9 @@ html body {
     background-color: #2f4f30;
 }
 
-.carta {
+.cards {
     position: relative;
-    width: 150px;
+    width: 140px;
     left: 100px;
     margin-left: -80px;
 }

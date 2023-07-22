@@ -1,7 +1,16 @@
 let deck = [];
 const types = ['C', 'D', 'S', 'H'];
 const special_cards = ['J', 'Q', 'K', 'A']
+let playerPoints = 0,
+    pcPoints = 0
 
+const btnNew = document.querySelector('#btnNew')
+const btnGet = document.querySelector('#btnGet')
+const btnStop = document.querySelector('#btnStop')
+const small = document.querySelectorAll("small")
+
+const playerCards = document.querySelector('#player-cards');
+const computerCards = document.querySelector('#computer-cards');
 
 // This funtion create a new deck
 const createDeck = () => {
@@ -19,7 +28,7 @@ const createDeck = () => {
 
     // console.log(deck)
     deck = _.shuffle(deck)
-    console.log(deck)
+    // console.log(deck)
     return deck
 }
 
@@ -55,5 +64,17 @@ const cardValue = (card) => {
     // console.log({ value })
 }
 
-const value = cardValue(requestCard());
-console.log({ value })
+btnGet.addEventListener('click', function () {
+    const card = requestCard();
+    playerPoints = playerPoints + cardValue(card)
+    small[0].innerText = playerPoints
+
+    const imgCard = document.createElement('img');
+    imgCard.src = `assets/cartas/${card}.png`
+    playerCards.append(imgCard)
+    imgCard.classList.add('cards')
+    // <img src="assets/cartas/10C.png" class="carta">
+
+    // console.log({ playerPoints })
+    // console.log({ card })
+})
